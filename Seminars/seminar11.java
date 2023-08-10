@@ -1,4 +1,4 @@
-// линейная сложность
+package Seminars;// линейная сложность
 // поиск суммы чисел от 1 до n
 
 public class seminar11 {
@@ -21,7 +21,7 @@ public class seminar11 {
         // для квадратичной сложности
         // для 1000 время практически одинаковое
         // для 100 первый метод быстрее
-        int n = 1000;
+        n = 1000;
         primaryNums(n);
         long start4 = System.nanoTime();
         primaryNums(n);
@@ -67,7 +67,7 @@ public class seminar11 {
             return sumR(n);
         return sum(n);
     }
-}
+
 
 
 // квадратичная сложность
