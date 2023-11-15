@@ -1,6 +1,76 @@
 package Seminars.Seminar4;
 
 public class HashTable<K, V> {
+    // load_size - коэффициент заполненности таблицы
+    // чем больше пустых ячеек, тем меньше шанс попасть в пустую
+    private static  final double load_size = 0.75;
+    private int size;
+    // создадим массив buckets
+    private Bucket<K, V>[] buckets;
+    // выделим память для buckets
+    HashTable() {
+        // все ячейки будут заполнены null
+        buckets = new Bucket[8];
+    }
+    private int calculateIndex(K key){
+        // метод высчитывания хеш-кода. ограничим хеш-код длиной массива и берем модуль его
+        return Math.abs(key.hashCode() % buckets.length);
+    }
+    public boolean add(K key, V value){
+        // когда заполненных элементов станет больше, чем ячеек в массиве,
+        // то увеличим количество ячеек функцией resize
+        if(buckets.length * load_size <= size) {
+            resize();
+        }
+        int index = calculateIndex(key);
+        if(buckets[index]== null){
+            buckets[index] = new Bucket<>();
+        }
+        boolean result = buckets[index].add(key, value);
+        if (result) //если увеличиться, то увеличить длину массива
+            size++;
+        return result;
+    }
+    public boolean remove(K key){
+        int index = calculateIndex(key);
+        if(buckets[index] == null){
+            return false;
+        }
+        boolean result = buckets[index].remove(key);
+        if (result)
+            size--;
+        return result;
+    }
+    // в resize надо пересоздавать массив
+    private void resize() {
+        Bucket<K, V>[] old = buckets;
+        buckets = new Bucket[old.length * 2];
+        for (int i = 0; i < old.length; i++) {
+            Bucket<K, V> bucket = old[i];
+            if (bucket == null)
+                continue;
+            Bucket.Node node = bucket.root;
+            while(node != null) {
+                this.add((K) node.pair.key, (V) node.pair.value);
+                node = node.next;
+            }
+            old[i] = null;
+        }
+        old = null;
+    }
+    public void print() {
+        for (var item: buckets) {
+            if (item != null){
+                item.print();
+                System.out.println();
+            }else {
+                System.out.println("-----");
+            }
+
+        }
+    }
+
+
     private class Bucket<K, V> {
         // у связного списка дб root
         Node root;
@@ -68,6 +138,13 @@ public class HashTable<K, V> {
                     currentNode = currentNode.next;
                 }
             return false;
+        }
+        public void print() {
+            Node node = root;
+            while(node != null ){
+                System.out.println("[" + node.pair.key + ";" + node.pair.value + "]");
+                node = node.next;
+            }
         }
 
         private class Node {
